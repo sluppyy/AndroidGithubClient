@@ -1,5 +1,6 @@
 package my.projects.githubclient.model.respository.network.retrofit
 
+import my.projects.githubclient.model.data.AuthUser
 import my.projects.githubclient.model.data.User
 import my.projects.githubclient.model.respository.network.NetworkGithubApi
 import retrofit2.Response
@@ -13,5 +14,5 @@ interface RetrofitGithubRepository : NetworkGithubApi {
     ): Response<User?>
 
     @GET("user")
-    override suspend fun getAuthUser(): Response<User?>
+    override suspend fun getAuthUser(): Response<AuthUser?>
 }

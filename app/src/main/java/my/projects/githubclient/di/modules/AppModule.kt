@@ -22,7 +22,7 @@ object AppModule {
     @Singleton
     @Provides
     fun getNetworkGithubApi(): NetworkGithubApi {
-        val okHttpClient = OkHttpClient.Builder().authenticator { route, response ->
+        val okHttpClient = OkHttpClient.Builder().authenticator { _, response ->
             response.request().newBuilder().header("Authorization", Credentials.basic(GITHUB_USER, GITHUB_TOKEN)).build()
         }.build()
 

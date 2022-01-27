@@ -2,11 +2,7 @@ package my.projects.githubclient.model.respository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import my.projects.githubclient.model.data.OfflineError
-import my.projects.githubclient.model.data.UnknownError
-import my.projects.githubclient.model.data.Ok
-import my.projects.githubclient.model.data.RepositoryResponse
-import my.projects.githubclient.model.data.User
+import my.projects.githubclient.model.data.*
 import my.projects.githubclient.model.respository.network.NetworkGithubApi
 import java.net.UnknownHostException
 import javax.inject.Inject
@@ -28,13 +24,13 @@ class GitHubRepository @Inject constructor(): GithubRepository {
         } catch(e: Exception) { emit(UnknownError<User?>(e.toString())) }
     }
 
-    override suspend fun getAuthUser(): Flow<RepositoryResponse<User?>> = flow {
+    override suspend fun getAuthUser(): Flow<RepositoryResponse<AuthUser?>> = flow {
         try {
             val networkResponse = networkRepository.getAuthUser()
 
             if (networkResponse.isSuccessful) emit(Ok(networkResponse.body()))
-            else emit(UnknownError<User?>(networkResponse.toString()))
-        } catch(e: UnknownHostException) { emit(OfflineError<User?>())
-        } catch(e: Exception) { emit(UnknownError<User?>(e.toString())) }
+            else emit(UnknownError<AuthUser?>(networkResponse.toString()))
+        } catch(e: UnknownHostException) { emit(OfflineError<AuthUser?>())
+        } catch(e: Exception) { emit(UnknownError<AuthUser?>(e.toString())) }
     }
 }
