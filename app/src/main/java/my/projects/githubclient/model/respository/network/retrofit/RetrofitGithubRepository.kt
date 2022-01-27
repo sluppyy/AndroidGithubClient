@@ -11,4 +11,7 @@ interface RetrofitGithubRepository : NetworkGithubApi {
     override suspend fun getUser(
         @Path("user") user: String
     ): Response<User?>
+
+    @GET("user")
+    override suspend fun getAuthUser(): Response<User?>
 }

@@ -23,7 +23,17 @@ class GitHubRepository @Inject constructor(): GithubRepository {
             val networkResponse = networkRepository.getUser(user)
 
             if (networkResponse.isSuccessful) emit(Ok(networkResponse.body()))
-            else emit(UnknownError<User?>(networkResponse.errorBody().toString()))
+            else emit(UnknownError<User?>(networkResponse.toString()))
+        } catch(e: UnknownHostException) { emit(OfflineError<User?>())
+        } catch(e: Exception) { emit(UnknownError<User?>(e.toString())) }
+    }
+
+    override suspend fun getAuthUser(): Flow<RepositoryResponse<User?>> = flow {
+        try {
+            val networkResponse = networkRepository.getAuthUser()
+
+            if (networkResponse.isSuccessful) emit(Ok(networkResponse.body()))
+            else emit(UnknownError<User?>(networkResponse.toString()))
         } catch(e: UnknownHostException) { emit(OfflineError<User?>())
         } catch(e: Exception) { emit(UnknownError<User?>(e.toString())) }
     }

@@ -4,9 +4,13 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import my.projects.githubclient.config.GITHUB_TOKEN
 import my.projects.githubclient.config.GITHUB_URL
+import my.projects.githubclient.config.GITHUB_USER
 import my.projects.githubclient.model.respository.network.NetworkGithubApi
 import my.projects.githubclient.model.respository.network.retrofit.RetrofitGithubRepository
+import okhttp3.Credentials
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -18,9 +22,12 @@ object AppModule {
     @Singleton
     @Provides
     fun getNetworkGithubApi(): NetworkGithubApi {
-
+        val okHttpClient = OkHttpClient.Builder().authenticator { route, response ->
+            response.request().newBuilder().header("Authorization", Credentials.basic(GITHUB_USER, GITHUB_TOKEN)).build()
+        }.build()
 
         return Retrofit.Builder()
+            .client(okHttpClient)
             .baseUrl(GITHUB_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build().create(RetrofitGithubRepository::class.java)

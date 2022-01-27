@@ -6,4 +6,5 @@ import my.projects.githubclient.model.data.User
 
 interface GithubRepository {
     suspend fun getUser(user: String): Flow<RepositoryResponse<User?>>
+    suspend fun getAuthUser(): Flow<RepositoryResponse<User?>>
 }

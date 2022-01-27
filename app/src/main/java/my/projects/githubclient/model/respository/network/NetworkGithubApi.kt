@@ -6,4 +6,5 @@ import retrofit2.Response
 
 interface NetworkGithubApi {
     suspend fun getUser(user: String): Response<User?>
+    suspend fun getAuthUser(): Response<User?>
 }
