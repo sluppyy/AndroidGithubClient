@@ -18,6 +18,8 @@ object AppModule {
     @Singleton
     @Provides
     fun getNetworkGithubApi(): NetworkGithubApi {
+
+
         return Retrofit.Builder()
             .baseUrl(GITHUB_URL)
             .addConverterFactory(GsonConverterFactory.create())
