@@ -33,4 +33,40 @@ class GitHubRepository @Inject constructor(): GithubRepository {
         } catch(e: UnknownHostException) { emit(OfflineError<AuthUser?>())
         } catch(e: Exception) { emit(UnknownError<AuthUser?>(e.toString())) }
     }
+
+    override suspend fun getUserRepos(user: String): Flow<RepositoryResponse<List<Repository>?>> = flow {
+        if (user != "") {
+            try {
+                val networkResponse = networkRepository.getUserRepos(user)
+
+                if (networkResponse.isSuccessful) emit(Ok<List<Repository>?>(networkResponse.body()))
+                else emit(UnknownError<List<Repository>?>(networkResponse.toString()))
+            } catch(e: UnknownHostException) { emit(OfflineError<List<Repository>?>())
+            } catch(e: Exception) { emit(UnknownError<List<Repository>?>(e.toString())) }
+        }
+    }
+
+    override suspend fun getOrgs(user: String): Flow<RepositoryResponse<List<Organisation>?>> = flow {
+        if (user != "") {
+            try {
+                val networkResponse = networkRepository.getUserOrgs(user)
+
+                if (networkResponse.isSuccessful) emit(Ok<List<Organisation>?>(networkResponse.body()))
+                else emit(UnknownError<List<Organisation>?>(networkResponse.toString()))
+            } catch(e: UnknownHostException) { emit(OfflineError<List<Organisation>?>())
+            } catch(e: Exception) { emit(UnknownError<List<Organisation>?>(e.toString())) }
+        }
+    }
+
+    override suspend fun getStarred(user: String): Flow<RepositoryResponse<List<Repository>?>> = flow {
+        if (user != "") {
+            try {
+                val networkResponse = networkRepository.getUserStarred(user)
+
+                if (networkResponse.isSuccessful) emit(Ok<List<Repository>?>(networkResponse.body()))
+                else emit(UnknownError<List<Repository>?>(networkResponse.toString()))
+            } catch(e: UnknownHostException) { emit(OfflineError<List<Repository>?>())
+            } catch(e: Exception) { emit(UnknownError<List<Repository>?>(e.toString())) }
+        }
+    }
 }

@@ -26,6 +26,9 @@ fun ProfileScreen(
     modifier: Modifier
 ) {
     val user by viewModel.user.collectAsState()
+    val repos by viewModel.repositories.collectAsState()
+    val orgs by viewModel.organisations.collectAsState()
+    val starred by viewModel.starreds.collectAsState()
 
     val fillMaxWidth = Modifier.fillMaxWidth()
 
@@ -41,30 +44,46 @@ fun ProfileScreen(
             //Repositories
             InfoRow(
                 title = "Repositories",
-                advancedInfo = "1", modifier = fillMaxWidth.height(100.dp).padding(16.dp)) {
+                advancedInfo = repos?.size?.toString() ?: "0", modifier = fillMaxWidth
+                    .height(100.dp)
+                    .padding(16.dp)) {
                 Image(
                     Icons.Default.Menu,
                     "1",
-                    modifier = Modifier.width(40.dp).fillMaxHeight().background(Color(0xFF8F6249)
-                ))}
+                    modifier = Modifier
+                        .width(40.dp)
+                        .fillMaxHeight()
+                        .background(
+                            Color(0xFF8F6249)
+                        ))}
 
             //Organisations
             InfoRow(
                 title = "Organisations",
-                advancedInfo = "0", modifier = fillMaxWidth.height(100.dp).padding(16.dp)) {
+                advancedInfo = orgs?.size?.toString() ?: "0", modifier = fillMaxWidth
+                    .height(100.dp)
+                    .padding(16.dp)) {
                 Image(
                     Icons.Default.Home,
                     "0",
-                    modifier = Modifier.width(40.dp).fillMaxHeight().background(Color(0xFFFF7043)))}
+                    modifier = Modifier
+                        .width(40.dp)
+                        .fillMaxHeight()
+                        .background(Color(0xFFFF7043)))}
 
             //Starred
             InfoRow(
                 title = "Starred",
-                advancedInfo = "8", modifier = fillMaxWidth.height(100.dp).padding(16.dp)) {
+                advancedInfo = starred?.size?.toString() ?: "0", modifier = fillMaxWidth
+                    .height(100.dp)
+                    .padding(16.dp)) {
                 Image(
                     Icons.Default.Star,
                     "8",
-                    modifier = Modifier.width(40.dp).fillMaxHeight().background(Color(0xFFFFCA28)))}
+                    modifier = Modifier
+                        .width(40.dp)
+                        .fillMaxHeight()
+                        .background(Color(0xFFFFCA28)))}
         }
     }
 }
