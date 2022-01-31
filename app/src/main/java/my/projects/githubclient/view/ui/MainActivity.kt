@@ -9,6 +9,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
+import my.projects.githubclient.view.ui.components.ProfileDraw
+import my.projects.githubclient.view.ui.screens.HomeScreen
 import my.projects.githubclient.view.ui.screens.ProfileScreen
 import my.projects.githubclient.view.ui.theme.GithubClientTheme
 import my.projects.githubclient.viewmodel.ProfileViewModel
@@ -20,10 +22,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val user by profileViewModel.user.collectAsState()
-
             GithubClientTheme {
-                ProfileScreen(viewModel = profileViewModel, modifier = Modifier.fillMaxSize())
+                HomeScreen(viewModel = profileViewModel, modifier = Modifier.fillMaxSize())
             }
         }
     }

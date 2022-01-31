@@ -26,8 +26,8 @@ class ProfileViewModel @Inject constructor (
     private val _organisations = MutableStateFlow<List<Organisation>?>(null)
     val organisations: StateFlow<List<Organisation>?> = _organisations
 
-    private val _starreds = MutableStateFlow<List<Repository>?>(null)
-    val starreds:  StateFlow<List<Repository>?> = _starreds
+    private val _starred = MutableStateFlow<List<Repository>?>(null)
+    val starred:  StateFlow<List<Repository>?> = _starred
 
     private suspend fun updateProfile() {
         repository.getAuthUser().collect { user ->
@@ -56,7 +56,7 @@ class ProfileViewModel @Inject constructor (
 
         repository.getStarred(_user.value?.login ?: "").collect { starred ->
             when (starred) {
-                is Ok -> _starreds.value = starred.body
+                is Ok -> _starred.value = starred.body
                 is UnknownError -> Log.e("dsdsdsd", starred.error)
                 is OfflineError -> Log.e("dsdsdsd", "Оффлайн")
             }

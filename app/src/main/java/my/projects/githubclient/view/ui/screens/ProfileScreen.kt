@@ -1,40 +1,49 @@
 package my.projects.githubclient.view.ui.screens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
 import androidx.compose.material.Scaffold
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import my.projects.githubclient.R
+import my.projects.githubclient.model.data.Work
+import my.projects.githubclient.view.ui.components.IconWithBackground
 import my.projects.githubclient.view.ui.components.InfoRow
 import my.projects.githubclient.view.ui.components.ProfileDraw
+import my.projects.githubclient.view.ui.theme.MyColors
 import my.projects.githubclient.viewmodel.ProfileViewModel
 
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel,
-    modifier: Modifier
+    modifier: Modifier,
+    onWorkClick: (Work) -> Unit = {}
 ) {
     val user by viewModel.user.collectAsState()
     val repos by viewModel.repositories.collectAsState()
     val orgs by viewModel.organisations.collectAsState()
-    val starred by viewModel.starreds.collectAsState()
+    val starred by viewModel.starred.collectAsState()
 
     val fillMaxWidth = Modifier.fillMaxWidth()
 
+    val infoRowModifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp)
+        .height(40.dp)
+
+    val imageModifier = Modifier
+        .width(40.dp)
+        .fillMaxHeight()
+
     Scaffold(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize()) {
-            ProfileDraw(user = user)
+            ProfileDraw(user = user?.toUser())
 
             Divider(color = Color.Black, modifier = Modifier
                 .fillMaxWidth()
@@ -42,48 +51,34 @@ fun ProfileScreen(
                 .height(2.dp))
 
             //Repositories
-            InfoRow(
-                title = "Repositories",
-                advancedInfo = repos?.size?.toString() ?: "0", modifier = fillMaxWidth
-                    .height(100.dp)
-                    .padding(16.dp)) {
-                Image(
-                    Icons.Default.Menu,
-                    "1",
-                    modifier = Modifier
-                        .width(40.dp)
-                        .fillMaxHeight()
-                        .background(
-                            Color(0xFF8F6249)
-                        ))}
+            InfoRow(title = Work.REPOSITORIES.toString,
+                repos?.size?.toString() ?: "0",
+                modifier = infoRowModifier.clickable { onWorkClick(Work.REPOSITORIES) }
+            ) {
+                IconWithBackground(
+                    painter = painterResource(R.drawable.ic_outline_book_24),
+                    backgroundColor = MyColors.Black, modifier = imageModifier)
+            }
 
             //Organisations
-            InfoRow(
-                title = "Organisations",
-                advancedInfo = orgs?.size?.toString() ?: "0", modifier = fillMaxWidth
-                    .height(100.dp)
-                    .padding(16.dp)) {
-                Image(
-                    Icons.Default.Home,
-                    "0",
-                    modifier = Modifier
-                        .width(40.dp)
-                        .fillMaxHeight()
-                        .background(Color(0xFFFF7043)))}
+            InfoRow(title = Work.ORGANIZATIONS.toString,
+                advancedInfo = orgs?.size?.toString() ?: "0",
+                modifier = infoRowModifier.clickable { onWorkClick(Work.ORGANIZATIONS) }
+            ) {
+                IconWithBackground(
+                    painter = painterResource(R.drawable.ic_outline_organisations_24),
+                    backgroundColor = MyColors.Orange, modifier = imageModifier)
+            }
 
             //Starred
-            InfoRow(
-                title = "Starred",
-                advancedInfo = starred?.size?.toString() ?: "0", modifier = fillMaxWidth
-                    .height(100.dp)
-                    .padding(16.dp)) {
-                Image(
-                    Icons.Default.Star,
-                    "8",
-                    modifier = Modifier
-                        .width(40.dp)
-                        .fillMaxHeight()
-                        .background(Color(0xFFFFCA28)))}
+            InfoRow(title = Work.STARRED.toString,
+                advancedInfo = starred?.size?.toString() ?: "0",
+                modifier = infoRowModifier.clickable { onWorkClick(Work.STARRED) }
+            ) {
+                IconWithBackground(
+                    painter = painterResource(R.drawable.ic_outline_star_border_24),
+                    backgroundColor = MyColors.Yellow, modifier = imageModifier)
+            }
         }
     }
 }
