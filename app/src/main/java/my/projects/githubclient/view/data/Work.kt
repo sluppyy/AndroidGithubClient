@@ -1,4 +1,4 @@
-package my.projects.githubclient.model.data
+package my.projects.githubclient.view.data
 
 enum class Work(val toString: String) {
     ISSUES("Issues"),

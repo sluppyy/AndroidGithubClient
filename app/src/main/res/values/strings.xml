@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GithubClient</string>
+    <string name="home_path">Home</string>
+    <string name="profile_path">Profile</string>
 </resources>

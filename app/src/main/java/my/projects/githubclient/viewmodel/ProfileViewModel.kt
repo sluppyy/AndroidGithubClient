@@ -33,32 +33,32 @@ class ProfileViewModel @Inject constructor (
         repository.getAuthUser().collect { user ->
             when (user) {
                 is Ok -> _user.value = user.body
-                is UnknownError -> Log.e("dsdsdsd", user.error)
-                is OfflineError -> Log.e("dsdsdsd", "Оффлайн")
+                is UnknownError -> TODO()
+                is OfflineError -> TODO()
             }
         }
 
         repository.getUserRepos(_user.value?.login ?: "").collect { repositories ->
             when (repositories) {
                 is Ok -> _repositories.value = repositories.body
-                is UnknownError -> Log.e("dsdsdsd", repositories.error)
-                is OfflineError -> Log.e("dsdsdsd", "Оффлайн")
+                is UnknownError -> TODO()
+                is OfflineError -> TODO()
             }
         }
 
         repository.getOrgs(_user.value?.login ?: "").collect { orgs ->
             when (orgs) {
                 is Ok -> _organisations.value = orgs.body
-                is UnknownError -> Log.e("dsdsdsd", orgs.error)
-                is OfflineError -> Log.e("dsdsdsd", "Оффлайн")
+                is UnknownError -> TODO()
+                is OfflineError -> TODO()
             }
         }
 
         repository.getStarred(_user.value?.login ?: "").collect { starred ->
             when (starred) {
                 is Ok -> _starred.value = starred.body
-                is UnknownError -> Log.e("dsdsdsd", starred.error)
-                is OfflineError -> Log.e("dsdsdsd", "Оффлайн")
+                is UnknownError -> TODO()
+                is OfflineError -> TODO()
             }
         }
     }

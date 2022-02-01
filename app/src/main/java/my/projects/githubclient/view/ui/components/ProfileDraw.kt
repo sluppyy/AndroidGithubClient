@@ -57,9 +57,9 @@ fun ProfileDraw(
             Text(user?.login ?: "Login", fontSize = 30.sp)
         }
 
-        Row(fillMaxWidth.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically){
+        Row(fillMaxWidth, verticalAlignment = Alignment.CenterVertically){
             Icon(Icons.Default.Person, "", modifier = Modifier
-                .size(30.dp)
+                .size(40.dp)
                 .padding(start = 8.dp, end = 8.dp))
 
             Text(buildAnnotatedString {

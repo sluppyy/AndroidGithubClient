@@ -17,19 +17,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import my.projects.githubclient.R
-import my.projects.githubclient.model.data.Work
+import my.projects.githubclient.view.data.Work
 import my.projects.githubclient.view.ui.components.WorksDraw
 import my.projects.githubclient.viewmodel.ProfileViewModel
 
 @Composable
 fun HomeScreen(
-    viewModel: ProfileViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSearchClick: () -> Unit = {},
+    onAddIssue: () -> Unit = {},
+    onWorkClick: (Work) -> Unit = {}
 ) {
     Scaffold(
         modifier = modifier,
         topBar = {
-            HomeTopBar()
+            HomeTopBar(
+                onSearchClick = onSearchClick,
+                onAddIssue = onAddIssue
+            )
         }
     ) {
        LazyColumn(
@@ -39,7 +44,7 @@ fun HomeScreen(
            item {
                WorksDraw(
                    works = Work.values().asList(),
-                   onWorkClick = {},
+                   onWorkClick = onWorkClick,
                    modifier = Modifier.fillMaxWidth()
                )
            }
@@ -68,12 +73,12 @@ fun HomeTopBar(
             Image(
                 painterResource(id = R.drawable.ic_outline_search_24),
                 "",
-                modifier = Modifier.size(50.dp).padding(horizontal = 8.dp).clickable{onSearchClick()})
+                modifier = Modifier.size(40.dp).padding(horizontal = 8.dp).clickable{onSearchClick()})
 
             Image(
                 painterResource(R.drawable.ic_outline_add_circle_outline_24),
                 "",
-                modifier = Modifier.size(50.dp).padding(horizontal = 8.dp).clickable{onAddIssue()})
+                modifier = Modifier.size(40.dp).padding(horizontal = 8.dp).clickable{onAddIssue()})
 
         }
     }
