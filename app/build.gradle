@@ -65,11 +65,15 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.4.0'
     //navigation
     implementation "androidx.navigation:navigation-compose:2.5.0-alpha01"
+    //swipe to refresh
+    implementation "com.google.accompanist:accompanist-swiperefresh:0.24.1-alpha"
 
     //retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+
     //serialization
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    //implementation 'com.squareup.retrofit2:converter-gson:2.9.0' old
+    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
 
     //dagger hilt
     implementation "com.google.dagger:hilt-android:2.38.1"

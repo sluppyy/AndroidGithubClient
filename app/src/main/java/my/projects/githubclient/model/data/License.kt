@@ -1,9 +1,13 @@
 package my.projects.githubclient.model.data
 
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = false)
 data class License(
-    val key: String,
-    val name: String,
-    val spdx_id: String,
-    val url: String,
-    val node_id: String
+    @Json(name = "key")     val key: String,
+    @Json(name = "name")    val name: String,
+    @Json(name = "spdx_id") val spdx_id: String,
+    @Json(name = "url")     val url: String,
+    @Json(name = "node_id") val node_id: String
 )

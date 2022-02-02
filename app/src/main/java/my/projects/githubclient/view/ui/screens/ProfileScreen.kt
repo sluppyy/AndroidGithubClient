@@ -3,6 +3,7 @@ package my.projects.githubclient.view.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -11,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import my.projects.githubclient.R
 import my.projects.githubclient.view.data.Work
 import my.projects.githubclient.view.ui.components.IconWithBackground
@@ -25,12 +28,16 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
     onWorkClick: (Work) -> Unit = {},
     onShareClick: () -> Unit = {},
-    onSettingsClick: () -> Unit = {}
+    onSettingsClick: () -> Unit = {},
+    isUpdating: Boolean = false,
+    onUpdate: () -> Unit = {}
 ) {
     val user by viewModel.user.collectAsState()
     val repos by viewModel.repositories.collectAsState()
     val orgs by viewModel.organisations.collectAsState()
     val starred by viewModel.starred.collectAsState()
+
+    val onBackgroundColor = MaterialTheme.colors.onBackground
 
     val infoRowModifier = Modifier
         .fillMaxWidth()
@@ -57,8 +64,9 @@ fun ProfileScreen(
                             .size(40.dp)
                             .padding(horizontal = 8.dp)
                     ) {
-                        Image(painterResource(id = R.drawable.ic_outline_share_24),
-                            contentDescription = "")
+                        Icon(painterResource(id = R.drawable.ic_outline_share_24),
+                            contentDescription = "",
+                            tint = onBackgroundColor)
                     }
 
                     IconButton(
@@ -67,50 +75,66 @@ fun ProfileScreen(
                             .size(40.dp)
                             .padding(horizontal = 8.dp)
                     ) {
-                        Image(painterResource(id = R.drawable.ic_outline_settings_24),
-                            contentDescription = "")
+                        Icon(painterResource(id = R.drawable.ic_outline_settings_24),
+                            contentDescription = "",
+                            tint = onBackgroundColor)
                     }
                 }
             }
         },
-        modifier = modifier
+        modifier = modifier,
+        backgroundColor = MaterialTheme.colors.onBackground.copy(0.1f)
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            ProfileDraw(user = user?.toUser())
 
-            Divider(color = MaterialTheme.colors.onBackground, modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp, horizontal = 10.dp)
-                .height(1.dp))
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(isRefreshing = isUpdating),
+            onRefresh = onUpdate
+        ) {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
 
-            //Repositories
-            InfoRow(title = Work.REPOSITORIES.toString,
-                repos?.size?.toString() ?: "0",
-                modifier = infoRowModifier.clickable { onWorkClick(Work.REPOSITORIES) }
-            ) {
-                IconWithBackground(
-                    painter = painterResource(R.drawable.ic_outline_book_24),
-                    backgroundColor = MyColors.Black, modifier = imageModifier)
-            }
+                item {ProfileDraw(user = user?.toUser())}
 
-            //Organisations
-            InfoRow(title = Work.ORGANIZATIONS.toString,
-                advancedInfo = orgs?.size?.toString() ?: "0",
-                modifier = infoRowModifier.clickable { onWorkClick(Work.ORGANIZATIONS) }
-            ) {
-                IconWithBackground(
-                    painter = painterResource(R.drawable.ic_outline_organisations_24),
-                    backgroundColor = MyColors.Orange, modifier = imageModifier)
-            }
+                item {
+                    Spacer(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp, horizontal = 10.dp))
+                }
 
-            //Starred
-            InfoRow(title = Work.STARRED.toString,
-                advancedInfo = starred?.size?.toString() ?: "0",
-                modifier = infoRowModifier.clickable { onWorkClick(Work.STARRED) }
-            ) {
-                IconWithBackground(
-                    painter = painterResource(R.drawable.ic_outline_star_border_24),
-                    backgroundColor = MyColors.Yellow, modifier = imageModifier)
+                item {
+                    Card {
+                        Column {
+                            //Repositories
+                            InfoRow(title = Work.REPOSITORIES.toString,
+                                repos?.size?.toString() ?: "0",
+                                modifier = infoRowModifier.clickable { onWorkClick(Work.REPOSITORIES) }
+                            ) {
+                                IconWithBackground(
+                                    painter = painterResource(R.drawable.ic_outline_book_24),
+                                    backgroundColor = MyColors.Black, modifier = imageModifier)
+                            }
+
+                            //Organisations
+                            InfoRow(title = Work.ORGANIZATIONS.toString,
+                                advancedInfo = orgs?.size?.toString() ?: "0",
+                                modifier = infoRowModifier.clickable { onWorkClick(Work.ORGANIZATIONS) }
+                            ) {
+                                IconWithBackground(
+                                    painter = painterResource(R.drawable.ic_outline_organisations_24),
+                                    backgroundColor = MyColors.Orange, modifier = imageModifier)
+                            }
+
+                            //Starred
+                            InfoRow(title = Work.STARRED.toString,
+                                advancedInfo = starred?.size?.toString() ?: "0",
+                                modifier = infoRowModifier.clickable { onWorkClick(Work.STARRED) }
+                            ) {
+                                IconWithBackground(
+                                    painter = painterResource(R.drawable.ic_outline_star_border_24),
+                                    backgroundColor = MyColors.Yellow, modifier = imageModifier)
+                            }
+                        }
+                    }
+                }
             }
         }
     }

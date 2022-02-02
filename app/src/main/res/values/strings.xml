@@ -2,4 +2,6 @@
     <string name="app_name">GithubClient</string>
     <string name="home_path">Home</string>
     <string name="profile_path">Profile</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="offline_error">Offline</string>
 </resources>

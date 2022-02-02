@@ -12,7 +12,7 @@ import my.projects.githubclient.model.respository.network.retrofit.RetrofitGithu
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -29,7 +29,7 @@ object AppModule {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(GITHUB_URL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create())
             .build().create(RetrofitGithubRepository::class.java)
     }
 }

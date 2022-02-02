@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import my.projects.githubclient.R
 import my.projects.githubclient.model.data.*
 import my.projects.githubclient.model.respository.GitHubRepository
 import javax.inject.Inject
@@ -29,36 +30,55 @@ class ProfileViewModel @Inject constructor (
     private val _starred = MutableStateFlow<List<Repository>?>(null)
     val starred:  StateFlow<List<Repository>?> = _starred
 
-    private suspend fun updateProfile() {
-        repository.getAuthUser().collect { user ->
-            when (user) {
-                is Ok -> _user.value = user.body
-                is UnknownError -> TODO()
-                is OfflineError -> TODO()
-            }
-        }
+    private val _snackBarMessage = MutableStateFlow<Int?>(null)
+    val snackBarMessage: StateFlow<Int?> = _snackBarMessage
 
-        repository.getUserRepos(_user.value?.login ?: "").collect { repositories ->
-            when (repositories) {
-                is Ok -> _repositories.value = repositories.body
-                is UnknownError -> TODO()
-                is OfflineError -> TODO()
-            }
-        }
+    private val _isUpdating = MutableStateFlow<Boolean>(false)
+    val isUpdating: StateFlow<Boolean> = _isUpdating
 
-        repository.getOrgs(_user.value?.login ?: "").collect { orgs ->
-            when (orgs) {
-                is Ok -> _organisations.value = orgs.body
-                is UnknownError -> TODO()
-                is OfflineError -> TODO()
-            }
-        }
+    fun updateProfile() {
+        viewModelScope.launch {
+            if (!isUpdating.value) {
+                _isUpdating.emit(true)
 
-        repository.getStarred(_user.value?.login ?: "").collect { starred ->
-            when (starred) {
-                is Ok -> _starred.value = starred.body
-                is UnknownError -> TODO()
-                is OfflineError -> TODO()
+                var resultMessage: Int? = null
+                _snackBarMessage.emit(null)
+
+                repository.getAuthUser().collect { user ->
+                    when (user) {
+                        is Ok -> _user.value = user.body
+                        is UnknownError -> resultMessage = R.string.unknown_error
+                        is OfflineError -> resultMessage = R.string.offline_error
+                    }
+                }
+
+                repository.getUserRepos(_user.value?.login ?: "").collect { repositories ->
+                    when (repositories) {
+                        is Ok -> _repositories.value = repositories.body
+                        is UnknownError -> resultMessage = R.string.unknown_error
+                        is OfflineError -> resultMessage = R.string.offline_error
+                    }
+                }
+
+                repository.getOrgs(_user.value?.login ?: "").collect { orgs ->
+                    when (orgs) {
+                        is Ok -> _organisations.value = orgs.body
+                        is UnknownError -> resultMessage = R.string.unknown_error
+                        is OfflineError -> resultMessage = R.string.offline_error
+                    }
+                }
+
+                repository.getStarred(_user.value?.login ?: "").collect { starred ->
+                    when (starred) {
+                        is Ok -> _starred.value = starred.body
+                        is UnknownError -> resultMessage = R.string.unknown_error
+                        is OfflineError -> resultMessage = R.string.offline_error
+                    }
+                }
+
+                _snackBarMessage.emit(resultMessage)
+
+                _isUpdating.emit(false)
             }
         }
     }

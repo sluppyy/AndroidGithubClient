@@ -1,21 +1,15 @@
 package my.projects.githubclient.model.data
 
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = false)
 data class Owner(
-    val login               : String,
-    val id                  : Int,
-    val avatar_url          : String,
-    val gravatar_id         : String,
-    val url                 : String,
-    val html_url            : String,
-    val followers_url       : String,
-    val following_url       : String,
-    val gists_url           : String,
-    val starred_url         : String,
-    val subscriptions_url   : String,
-    val organizations_url   : String,
-    val repos_url           : String,
-    val events_url          : String,
-    val received_events_url : String,
-    val type                : String,
-    val site_admin          : Boolean
+    @Json(name = "login")       val login               : String,
+    @Json(name = "id")          val id                  : Int,
+    @Json(name = "avatar_url")  val avatar_url          : String,
+    @Json(name = "gravatar_id") val gravatar_id         : String,
+    @Json(name = "url")         val url                 : String,
+    @Json(name = "type")        val type                : String,
+    @Json(name = "site_admin")  val site_admin          : Boolean
 )

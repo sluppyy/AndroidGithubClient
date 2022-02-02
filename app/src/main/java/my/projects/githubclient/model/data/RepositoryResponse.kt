@@ -5,3 +5,4 @@ sealed interface RepositoryResponse<T>
 class Ok<T>(val body: T) : RepositoryResponse<T>
 class OfflineError<T> : RepositoryResponse<T>
 class UnknownError<T>(val error: String) : RepositoryResponse<T>
+class a

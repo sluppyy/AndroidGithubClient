@@ -8,3 +8,11 @@ enum class Work(val toString: String) {
     ORGANIZATIONS("Organizations"),
     STARRED("Starred")
 }
+
+fun WorkfromString(name:String): Work? {
+    Work.values().forEach { work ->
+        if (name.lowercase() == work.toString.lowercase())
+        return work
+    }
+    return null
+}
