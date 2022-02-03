@@ -7,6 +7,9 @@ import dagger.hilt.components.SingletonComponent
 import my.projects.githubclient.config.GITHUB_TOKEN
 import my.projects.githubclient.config.GITHUB_URL
 import my.projects.githubclient.config.GITHUB_USER
+import my.projects.githubclient.model.respository.GitHubRepository
+import my.projects.githubclient.model.respository.GithubRepository
+import my.projects.githubclient.model.respository.local.LocalRepository
 import my.projects.githubclient.model.respository.network.NetworkGithubApi
 import my.projects.githubclient.model.respository.network.retrofit.RetrofitGithubRepository
 import okhttp3.Credentials
@@ -32,4 +35,13 @@ object AppModule {
             .addConverterFactory(MoshiConverterFactory.create())
             .build().create(RetrofitGithubRepository::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun getGithubRepository(
+        networkGithubApi: NetworkGithubApi,
+        localRepository: LocalRepository
+    ): GithubRepository = GitHubRepository(
+        networkRepository = networkGithubApi,
+        localRepository = localRepository)
 }

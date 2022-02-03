@@ -1,11 +1,15 @@
 package my.projects.githubclient.model.data
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+@Entity(tableName = "owners")
 @JsonClass(generateAdapter = false)
 data class Owner(
     @Json(name = "login")       val login               : String,
+    @PrimaryKey
     @Json(name = "id")          val id                  : Int,
     @Json(name = "avatar_url")  val avatar_url          : String,
     @Json(name = "gravatar_id") val gravatar_id         : String,

@@ -1,6 +1,9 @@
 package my.projects.githubclient.model.data
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.squareup.moshi.JsonClass
+
 
 @JsonClass(generateAdapter = true)
 data class User(
@@ -22,24 +25,35 @@ data class User(
     val received_events_url : String,
     val type                : String,
     val site_admin          : Boolean,
-    val name                : String?  = null,
-    val company             : String?  = null,
+    val name                : String?,
+    val company             : String?,
     val blog                : String,
-    val location            : String?  = null,
-    val email               : String?  = null,
-    val hireable            : Boolean? = null,
-    val bio                 : String?  = null,
-    val twitter_username    : String?  = null,
+    val location            : String?,
+    val email               : String?,
+    val hireable            : Boolean?,
+    val bio                 : String?,
+    val twitter_username    : String?,
     val public_repos        : Int,
     val public_gists        : Int,
     val followers           : Int,
     val following           : Int,
     val created_at          : String,
     val updated_at          : String
-)
+) {
+    fun toOwner() = Owner(
+        login = login,
+        id = id,
+        avatar_url = avatar_url,
+        gravatar_id = gravatar_id,
+        url = url,
+        type = type,
+        site_admin = site_admin)
+}
 
+@Entity(tableName = "auth_users")
 data class AuthUser(
     val login                       : String,
+    @PrimaryKey
     val id                          : Int,
     val node_id                     : String,
     val avatar_url                  : String,
@@ -76,8 +90,7 @@ data class AuthUser(
     val owned_private_repos         : Int,
     val disk_usage                  : Int,
     val collaborators               : Int,
-    val two_factor_authentication   : Boolean,
-    val plan                        : Plan
+    val two_factor_authentication   : Boolean
 ) {
     fun toUser() = User(
         login               = login,
@@ -113,11 +126,13 @@ data class AuthUser(
         created_at          = created_at,
         updated_at          = updated_at,
     )
-}
 
-data class Plan(
-    val name          : String?,
-    val space         : Int?,
-    val collaborators : Int?,
-    val private_repos : Int?
-)
+    fun toOwner() = Owner(
+        login = login,
+        id = id,
+        avatar_url = avatar_url,
+        gravatar_id = gravatar_id,
+        url = url,
+        type = type,
+        site_admin = site_admin)
+}

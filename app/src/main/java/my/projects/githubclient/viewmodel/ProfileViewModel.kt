@@ -11,11 +11,13 @@ import kotlinx.coroutines.launch
 import my.projects.githubclient.R
 import my.projects.githubclient.model.data.*
 import my.projects.githubclient.model.respository.GitHubRepository
+import my.projects.githubclient.model.respository.GithubRepository
+import my.projects.githubclient.model.respository.local.LocalRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor (
-    private val repository: GitHubRepository
+    private val repository: GithubRepository,
 ): ViewModel() {
 
     private val _user = MutableStateFlow<AuthUser?>(null)

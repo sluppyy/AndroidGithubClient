@@ -25,7 +25,7 @@ fun RepositoryDraw(
     repository: Repository
 ) {
     val profilePainter = rememberImagePainter(
-        data = repository.owner.avatar_url,
+        data = repository.owner?.avatar_url,
         builder = {
             placeholder(R.drawable.ic_outline_person_24)
             error(R.drawable.ic_outline_person_24)
@@ -41,17 +41,17 @@ fun RepositoryDraw(
                     modifier = Modifier.size(20.dp))
 
                 Text(
-                    repository.owner.login,
+                    repository.owner?.login ?: "",
                     modifier = Modifier.padding(start = 8.dp))
             }
 
             Text(
-                repository.name,
+                repository.name ?: "",
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 10.dp))
 
             if (repository.description != null) Text(
-                repository.description,
+                repository.description!!,
                 modifier = Modifier.padding(start = 10.dp))
 
             Row(
@@ -76,7 +76,7 @@ fun RepositoryDraw(
                             .size(25.dp)
                             .padding(start = 12.dp, end = 4.dp)
                     )
-                    Text(repository.language)
+                    Text(repository.language!!)
                 }
             }
         }
