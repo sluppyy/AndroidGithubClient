@@ -40,7 +40,7 @@ fun WorkScreen(
 
                     Text(
                         text = work.toString,
-                        fontWeight = FontWeight.Bold,
+                        //fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )
                 }

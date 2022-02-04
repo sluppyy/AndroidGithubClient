@@ -1,8 +1,9 @@
 package my.projects.githubclient.view.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -11,9 +12,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -26,37 +27,50 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import my.projects.githubclient.R
+import my.projects.githubclient.config.GITHUB_GET_TOKEN_URL
 import my.projects.githubclient.view.data.Screens
 import my.projects.githubclient.view.data.Work
-import my.projects.githubclient.view.data.WorkfromString
+import my.projects.githubclient.view.data.workfromString
 import my.projects.githubclient.view.ui.components.RepositoriesDraw
 import my.projects.githubclient.view.ui.screens.HomeScreen
 import my.projects.githubclient.view.ui.screens.ProfileScreen
+import my.projects.githubclient.view.ui.screens.SettingsScreen
 import my.projects.githubclient.view.ui.screens.WorkScreen
 import my.projects.githubclient.view.ui.theme.GithubClientTheme
 import my.projects.githubclient.viewmodel.ProfileViewModel
+import my.projects.githubclient.viewmodel.SettingsViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val profileViewModel: ProfileViewModel by viewModels()
+    private val settingsViewModel: SettingsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-
-            val isUpdating by profileViewModel.isUpdating.collectAsState()
-
             val scaffoldState = rememberScaffoldState()
+
             val screens = Screens.values()
+            val isUpdating by profileViewModel.isUpdating.collectAsState()
 
             GithubClientTheme {
                 //on new message from ProfileViewModel called snackbar
                 LaunchedEffect(scaffoldState.snackbarHostState) {
                     profileViewModel.snackBarMessage.collect { newMessage ->
-                        if (newMessage != null) {
-                            scaffoldState
+                        when (newMessage) {
+                            null -> {}
+                            R.string.author_error -> {
+                                val result = scaffoldState.snackbarHostState.showSnackbar(
+                                    resources.getString(newMessage),
+                                    actionLabel = resources.getString(R.string.log_in)
+                                )
+                                when (result) {
+                                    SnackbarResult.ActionPerformed -> navController.navigate("work/${Work.SETTINGS}")
+                                }
+                            }//cal auth dialog
+                            else -> scaffoldState
                                 .snackbarHostState
                                 .showSnackbar(resources.getString(newMessage))
                         }
@@ -115,14 +129,16 @@ class MainActivity : ComponentActivity() {
                                 if (profileViewModel.user.value != null) shareText(profileViewModel.user.value?.html_url!!)
                             },
                             isUpdating = isUpdating,
-                            onUpdate = profileViewModel::updateProfile)
+                            onUpdate = profileViewModel::updateProfile,
+                            onSettingsClick = {navController.navigate("work/${Work.SETTINGS}")}
+                        )
                         }
 
                         composable(
                             "work/{work}",
                             arguments = listOf(navArgument("work"){type = NavType.StringType})
                         ) { backStackEntry ->
-                            val work = WorkfromString(backStackEntry.arguments?.getString("work")!!)!!
+                            val work = workfromString(backStackEntry.arguments?.getString("work")!!)!!
 
                             WorkScreen(
                                 work = work,
@@ -138,6 +154,20 @@ class MainActivity : ComponentActivity() {
                                         val starred by profileViewModel.starred.collectAsState()
                                         RepositoriesDraw(repos = starred ?: emptyList())
                                     }
+                                    Work.SETTINGS -> SettingsScreen(
+                                        settingsViewModel = settingsViewModel,
+                                        modifier = Modifier.fillMaxSize(),
+                                        onSignOut = { 
+                                            settingsViewModel.clearAccessToken()
+                                            profileViewModel.clearData()
+                                            navController.popBackStack()
+                                        },
+                                        onGetToken = ::openLink,
+                                        onSaveToken = {
+                                            settingsViewModel.setAccessToken(it)
+                                            navController.popBackStack()
+                                        }
+                                    )
                                 }
                             }
                         }
@@ -154,6 +184,15 @@ class MainActivity : ComponentActivity() {
             type = "text/plain"
         }
         val shareIntent = Intent.createChooser(sendIntent, "Github profile")
+        startActivity(shareIntent)
+    }
+
+    private fun openLink() {
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_VIEW
+            data = Uri.parse(GITHUB_GET_TOKEN_URL)
+        }
+        val shareIntent = Intent.createChooser(sendIntent, "Get Token")
         startActivity(shareIntent)
     }
 }

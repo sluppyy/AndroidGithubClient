@@ -7,14 +7,28 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import my.projects.githubclient.model.respository.ConfigRepository
+import my.projects.githubclient.model.respository.GitHubRepository
+import my.projects.githubclient.model.respository.GithubRepository
 import my.projects.githubclient.model.respository.local.LocalRepository
 import my.projects.githubclient.model.respository.local.room.GithubDatabase
 import my.projects.githubclient.model.respository.local.room.RoomRepository
+import my.projects.githubclient.model.respository.network.NetworkGithubApi
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DBmodule {
+    @Singleton
+    @Provides
+    fun getGithubRepository(
+        networkGithubApi: NetworkGithubApi,
+        localRepository: LocalRepository
+    ): GithubRepository = GitHubRepository(
+        networkRepository = networkGithubApi,
+        localRepository = localRepository
+    )
+
     @Provides
     @Singleton
     fun getGithubDatabase(
@@ -32,5 +46,12 @@ object DBmodule {
         githubDatabase: GithubDatabase
     ): LocalRepository = RoomRepository(
         authUserDao = githubDatabase.authUserDao(),
-        reposDao = githubDatabase.reposDao())
+        reposDao = githubDatabase.reposDao(),
+        accessTokenDao = githubDatabase.accessTokenDao())
+
+    @Singleton
+    @Provides
+    fun getConfigRepository(
+        localRepository: LocalRepository
+    ): ConfigRepository = localRepository
 }

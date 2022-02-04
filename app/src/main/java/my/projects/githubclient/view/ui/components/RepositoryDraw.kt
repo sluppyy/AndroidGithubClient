@@ -6,7 +6,6 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,7 +13,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import coil.transform.CircleCropTransformation
 import my.projects.githubclient.R
 import my.projects.githubclient.model.data.Repository
 import my.projects.githubclient.view.ui.theme.MyColors
@@ -25,7 +23,7 @@ fun RepositoryDraw(
     repository: Repository
 ) {
     val profilePainter = rememberImagePainter(
-        data = repository.owner?.avatar_url,
+        data = repository.owner.avatar_url,
         builder = {
             placeholder(R.drawable.ic_outline_person_24)
             error(R.drawable.ic_outline_person_24)
@@ -41,12 +39,12 @@ fun RepositoryDraw(
                     modifier = Modifier.size(20.dp))
 
                 Text(
-                    repository.owner?.login ?: "",
+                    repository.owner.login,
                     modifier = Modifier.padding(start = 8.dp))
             }
 
             Text(
-                repository.name ?: "",
+                repository.name,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 10.dp))
 

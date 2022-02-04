@@ -4,15 +4,14 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import my.projects.githubclient.R
 import my.projects.githubclient.model.data.*
-import my.projects.githubclient.model.respository.GitHubRepository
 import my.projects.githubclient.model.respository.GithubRepository
-import my.projects.githubclient.model.respository.local.LocalRepository
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,11 +34,11 @@ class ProfileViewModel @Inject constructor (
     private val _snackBarMessage = MutableStateFlow<Int?>(null)
     val snackBarMessage: StateFlow<Int?> = _snackBarMessage
 
-    private val _isUpdating = MutableStateFlow<Boolean>(false)
+    private val _isUpdating = MutableStateFlow(false)
     val isUpdating: StateFlow<Boolean> = _isUpdating
 
     fun updateProfile() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             if (!isUpdating.value) {
                 _isUpdating.emit(true)
 
@@ -51,6 +50,7 @@ class ProfileViewModel @Inject constructor (
                         is Ok -> _user.value = user.body
                         is UnknownError -> resultMessage = R.string.unknown_error
                         is OfflineError -> resultMessage = R.string.offline_error
+                        is AuthError    -> resultMessage = R.string.author_error
                     }
                 }
 
@@ -59,6 +59,7 @@ class ProfileViewModel @Inject constructor (
                         is Ok -> _repositories.value = repositories.body
                         is UnknownError -> resultMessage = R.string.unknown_error
                         is OfflineError -> resultMessage = R.string.offline_error
+                        is AuthError    -> resultMessage = R.string.author_error
                     }
                 }
 
@@ -67,6 +68,7 @@ class ProfileViewModel @Inject constructor (
                         is Ok -> _organisations.value = orgs.body
                         is UnknownError -> resultMessage = R.string.unknown_error
                         is OfflineError -> resultMessage = R.string.offline_error
+                        is AuthError    -> resultMessage = R.string.author_error
                     }
                 }
 
@@ -75,19 +77,27 @@ class ProfileViewModel @Inject constructor (
                         is Ok -> _starred.value = starred.body
                         is UnknownError -> resultMessage = R.string.unknown_error
                         is OfflineError -> resultMessage = R.string.offline_error
+                        is AuthError    -> resultMessage = R.string.author_error
                     }
                 }
 
                 _snackBarMessage.emit(resultMessage)
-
                 _isUpdating.emit(false)
             }
         }
     }
 
-    init {
-        viewModelScope.launch {
-            updateProfile()
+    fun clearData() {
+        viewModelScope.launch(Dispatchers.IO){
+            _user.emit(null)
+            _repositories.emit(null)
+            _organisations.emit(null)
+            _starred.emit(null)
+            repository.clearData()
         }
+    }
+
+    init {
+        updateProfile()
     }
 }

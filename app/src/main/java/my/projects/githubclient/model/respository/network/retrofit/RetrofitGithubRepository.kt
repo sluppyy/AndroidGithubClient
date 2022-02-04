@@ -32,4 +32,7 @@ interface RetrofitGithubRepository : NetworkGithubApi {
     override suspend fun getUserStarred(
         @Path("user") user: String
     ): Response<List<Repository>?>
+
+    @GET("/user")
+    override suspend fun checkAuth(): Response<String>
 }

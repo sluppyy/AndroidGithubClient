@@ -13,4 +13,6 @@ interface NetworkGithubApi {
     suspend fun getUserRepos(user: String): Response<List<Repository>?>
     suspend fun getUserOrgs(user: String): Response<List<Organisation>?>
     suspend fun getUserStarred(user: String): Response<List<Repository>?>
+
+    suspend fun checkAuth(): Response<String>
 }

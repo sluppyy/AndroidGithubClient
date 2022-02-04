@@ -1,14 +1,17 @@
 package my.projects.githubclient.model.respository.local.room
 
+import my.projects.githubclient.model.data.AccessToken
 import my.projects.githubclient.model.data.AuthUser
 import my.projects.githubclient.model.data.Repository
 import my.projects.githubclient.model.respository.local.LocalRepository
+import my.projects.githubclient.model.respository.local.room.dao.AccessTokenDao
 import my.projects.githubclient.model.respository.local.room.dao.AuthUserDao
 import my.projects.githubclient.model.respository.local.room.dao.ReposDao
 
 class RoomRepository(
     private val authUserDao: AuthUserDao,
-    private val reposDao: ReposDao
+    private val reposDao: ReposDao,
+    private val accessTokenDao: AccessTokenDao
 ): LocalRepository {
     override suspend fun getAuthUser(): AuthUser?
     = authUserDao.getAuthUser()
@@ -28,4 +31,15 @@ class RoomRepository(
     }
 
     override suspend fun deleteRepos() = reposDao.clear()
+
+    override suspend fun getAccessToken(): AccessToken?
+    = accessTokenDao.getAccessToken()
+
+    override suspend fun updateAccessToken(accessToken: AccessToken) {
+        accessTokenDao.clear()
+        accessTokenDao.insertAccessToken(accessToken = accessToken)
+    }
+
+    override suspend fun deleteAccessToken()
+    = accessTokenDao.clear()
 }

@@ -1,7 +1,19 @@
 <resources>
     <string name="app_name">GithubClient</string>
+
     <string name="home_path">Home</string>
     <string name="profile_path">Profile</string>
+
     <string name="unknown_error">Unknown error</string>
     <string name="offline_error">Offline</string>
+
+    <string name="github_url_get_token">https://github.com/settings/tokens</string>
+    <string name="author_error">Authorisation Error</string>
+    <string name="sign_out">Sign out</string>
+    <string name="log_in">Log in</string>
+    <string name="user_field">User</string>
+    <string name="token_field">Token</string>
+    <string name="get_token">Get token</string>
+    <string name="save">Save</string>
+    <string name="exit">Exit</string>
 </resources>
