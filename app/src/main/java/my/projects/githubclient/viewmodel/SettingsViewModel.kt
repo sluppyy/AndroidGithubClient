@@ -9,9 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import my.projects.githubclient.model.data.AccessToken
-import my.projects.githubclient.model.data.structures.Directories
-import my.projects.githubclient.model.data.structures.Files
-import my.projects.githubclient.model.data.structures.GithubFile
 import my.projects.githubclient.model.respository.ConfigRepository
 import my.projects.githubclient.model.respository.GithubRepository
 import my.projects.githubclient.utils.SelectableObject
@@ -24,7 +21,7 @@ class SettingsViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
     private val githubRepository: GithubRepository
 ): ViewModel() {
-    val isAuthorized = githubRepository.is_authorized
+    val isAuthorized = githubRepository.isAuthorized
 
     private val _selectedWorks: MutableStateFlow<List<SelectableObject<Work>>>
     = MutableStateFlow(

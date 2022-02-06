@@ -12,13 +12,15 @@ import my.projects.githubclient.model.data.Repository
 @Composable
 fun RepositoriesDraw(
     modifier: Modifier = Modifier,
-    repos: List<Repository>
+    repos: List<Repository>,
+    onRepositoryClick: (Repository) -> Unit
 ) {
     LazyColumn(modifier = modifier) {
         items(repos) { repository ->
             RepositoryDraw(
                 modifier = Modifier.fillMaxWidth().padding(8.dp),
-                repository = repository)
+                repository = repository,
+                onRepositoryClick = onRepositoryClick)
         }
     }
 }

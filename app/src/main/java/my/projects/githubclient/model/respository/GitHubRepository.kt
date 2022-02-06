@@ -24,29 +24,35 @@ class GitHubRepository @Inject constructor(
     private val localRepository: LocalRepository
 ): GithubRepository {
     private val _is_authorized = MutableStateFlow(false)
-    override val is_authorized: StateFlow<Boolean> = _is_authorized
+    override val isAuthorized: StateFlow<Boolean> = _is_authorized
 
-    //TODO("получать новый клиент(или фабрику) из Dagger/Hilt а не создавать его самому")
+    //TODO("получать новый клиент(или фабрику) из конструктора а не создавать его самому")
     override suspend fun updateClient() {
         val (user, token) = localRepository.getAccessToken() ?: AccessToken("", "")
 
-        val okHttpClient: OkHttpClient = OkHttpClient.Builder().authenticator { _, response ->
-            val credentials = Credentials.basic(user, token)
+        if (user == "" || token == "") {
+            networkRepository = Retrofit.Builder()
+                .baseUrl(GITHUB_URL)
+                .addConverterFactory(MoshiConverterFactory.create())
+                .build().create(RetrofitGithubRepository::class.java)
+        } else {
+            val okHttpClient: OkHttpClient = OkHttpClient.Builder().authenticator { _, response ->
+                val credentials = Credentials.basic(user, token)
 
-            if (credentials.equals(response.request().header("Authorization"))) null
-            else response
-                .request()
-                .newBuilder()
-                .header("Authorization", credentials)
-                .build()
-        }.build()
+                if (credentials.equals(response.request().header("Authorization"))) null
+                else response
+                    .request()
+                    .newBuilder()
+                    .header("Authorization", credentials)
+                    .build()
+            }.build()
 
-        networkRepository = Retrofit.Builder()
-            .client(okHttpClient)
-            .baseUrl(GITHUB_URL)
-            .addConverterFactory(MoshiConverterFactory.create())
-            .build().create(RetrofitGithubRepository::class.java)
-
+            networkRepository = Retrofit.Builder()
+                .client(okHttpClient)
+                .baseUrl(GITHUB_URL)
+                .addConverterFactory(MoshiConverterFactory.create())
+                .build().create(RetrofitGithubRepository::class.java)
+        }
         getAuthUser()
     }
 
@@ -56,7 +62,8 @@ class GitHubRepository @Inject constructor(
         localRepository.deleteRepos()
     }
 
-    override suspend fun getUser(user: String): Flow<RepositoryResponse<User?>> = flow {
+    override suspend fun getUser(user: String)
+    : Flow<RepositoryResponse<User?>> = flow {
         try {
             val networkResponse = networkRepository.getUser(user)
 
@@ -78,7 +85,8 @@ class GitHubRepository @Inject constructor(
         } catch(e: Exception) { emit(UnknownError<User?>(e.toString())) }
     }
 
-    override suspend fun getAuthUser(): Flow<RepositoryResponse<AuthUser?>> = flow {
+    override suspend fun getAuthUser()
+    : Flow<RepositoryResponse<AuthUser?>> = flow {
         try {
             val localUser = localRepository.getAuthUser()
             if (localUser != null) emit(Ok<AuthUser?>(localUser))
@@ -101,7 +109,8 @@ class GitHubRepository @Inject constructor(
         } catch(e: Exception) { emit(UnknownError<AuthUser?>(e.toString())) }
     }
 
-    override suspend fun getUserRepos(user: String): Flow<RepositoryResponse<List<Repository>?>> = flow {
+    override suspend fun getUserRepos(user: String)
+    : Flow<RepositoryResponse<List<Repository>?>> = flow {
         if (user != "") {
             try {
                 val localRepos = localRepository.getRepos()
@@ -127,7 +136,8 @@ class GitHubRepository @Inject constructor(
         }
     }
 
-    override suspend fun getOrgs(user: String): Flow<RepositoryResponse<List<Organisation>?>> = flow {
+    override suspend fun getOrgs(user: String)
+    : Flow<RepositoryResponse<List<Organisation>?>> = flow {
         if (user != "") {
             try {
                 val networkResponse = networkRepository.getUserOrgs(user)
@@ -150,7 +160,8 @@ class GitHubRepository @Inject constructor(
         }
     }
 
-    override suspend fun getStarred(user: String): Flow<RepositoryResponse<List<Repository>?>> = flow {
+    override suspend fun getStarred(user: String)
+    : Flow<RepositoryResponse<List<Repository>?>> = flow {
         if (user != "") {
             try {
                 val networkResponse = networkRepository.getUserStarred(user)
@@ -187,5 +198,46 @@ class GitHubRepository @Inject constructor(
                 }
             }
         } catch(e: Exception) {_is_authorized.emit(false)}
+    }
+
+    override suspend fun getGithubFile(repository: Repository, path: String)
+    : Flow<RepositoryResponse<List<GithubFile>?>> = flow {
+        try {
+            val networkResponse = networkRepository.getGithubFile(
+                user = repository.owner.login,
+                repository = repository.name,
+                path = path
+            )
+
+            if (networkResponse.isSuccessful) {
+                emit(Ok<List<GithubFile>?>(networkResponse.body()))
+                _is_authorized.emit(true)
+            }
+            else {
+                when(networkResponse.code()) {
+                    401, 403  -> emit(AuthError<List<GithubFile>?>())
+                    else -> emit(UnknownError<List<GithubFile>?>(networkResponse.toString()))
+                }
+            }
+        } catch(e: UnknownHostException) { emit(OfflineError<List<GithubFile>?>())
+        } catch(e: Exception) { emit(UnknownError<List<GithubFile>?>(e.toString())) }
+    }
+
+    override suspend fun searchRepos(repositoryName: String, perPage: Int, page: Int): Flow<RepositoryResponse<SearchingRepos?>> = flow {
+        try {
+            val networkResponse = networkRepository.searchReposByName(repositoryName, perPage = perPage, page = page)
+
+            if (networkResponse.isSuccessful) {
+                emit(Ok<SearchingRepos?>(networkResponse.body()))
+                _is_authorized.emit(true)
+            }
+            else {
+                when(networkResponse.code()) {
+                    401, 403  -> emit(AuthError<SearchingRepos?>())
+                    else -> emit(UnknownError<SearchingRepos?>(networkResponse.toString()))
+                }
+            }
+        } catch(e: UnknownHostException) { emit(OfflineError<SearchingRepos?>())
+        } catch(e: Exception) { emit(UnknownError<SearchingRepos?>(e.toString())) }
     }
 }

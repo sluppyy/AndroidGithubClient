@@ -40,18 +40,21 @@ object AppModule {
         runBlocking {
             val (user, token) = configRepository.getAccessToken() ?: AccessToken("", "")
 
-            okHttpClient = OkHttpClient.Builder().authenticator { _, response ->
-                val credentials = Credentials.basic(user, token)
+            okHttpClient = if (user == "" || token == "") {
+                OkHttpClient()
+            } else {
+                OkHttpClient.Builder().authenticator { _, response ->
+                    val credentials = Credentials.basic(user, token)
 
-                if (credentials.equals(response.request().header("Authorization"))) null
-                else response
-                    .request()
-                    .newBuilder()
-                    .header("Authorization", credentials)
-                    .build()
-            }.build()
+                    if (credentials.equals(response.request().header("Authorization"))) null
+                    else response
+                        .request()
+                        .newBuilder()
+                        .header("Authorization", credentials)
+                        .build()
+                }.build()
+            }
         }
-
         return okHttpClient!!
     }
 }

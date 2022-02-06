@@ -3,14 +3,14 @@ First pet project: Github client copy
 
 desired features:
 =================
-* oauth authorization
-* offline mode
-* profile
-* home page
-* review repositories
-* review author
-* settings
-* themes and customisation
+* oauth authorization -
+* offline mode +
+* profile +
+* home page +
+* review repositories +
+* review author +-
+* settings +-
+* themes and customisation -
 
 Plan:
 =====
@@ -48,3 +48,8 @@ Plan:
     + browsed repository
     + get info (about, organisations, stared, ...)
     + settings/config
+    
+Results:
+========
+* 10 days
+* 5/8 goals

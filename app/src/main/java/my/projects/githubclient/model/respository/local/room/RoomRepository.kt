@@ -46,7 +46,7 @@ class RoomRepository(
     override suspend fun deleteAccessToken() = accessTokenDao.clear()
 
 
-    //TODO("RoomRepository should not deal with SharedPreferences")
+    //TODO("RoomRepository shouldn't deal with SharedPreferences")
     //=============Selected works=========
     override suspend fun getSelectedWorks(): List<SelectableObject<Work>> {
         val allWorks = Work.values()

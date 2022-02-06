@@ -1,13 +1,11 @@
 package my.projects.githubclient.model.respository.network.retrofit
 
-import my.projects.githubclient.model.data.AuthUser
-import my.projects.githubclient.model.data.Organisation
-import my.projects.githubclient.model.data.Repository
-import my.projects.githubclient.model.data.User
+import my.projects.githubclient.model.data.*
 import my.projects.githubclient.model.respository.network.NetworkGithubApi
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface RetrofitGithubRepository : NetworkGithubApi {
     @GET("users/{user}")
@@ -35,4 +33,18 @@ interface RetrofitGithubRepository : NetworkGithubApi {
 
     @GET("/user")
     override suspend fun checkAuth(): Response<String>
+
+    @GET("/repos/{user}/{repository}/contents/{path}")
+    override suspend fun getGithubFile(
+        @Path("user") user: String,
+        @Path("repository") repository: String,
+        @Path("path") path: String
+    ): Response<List<GithubFile>>
+
+    @GET("/search/repositories")
+    override suspend fun searchReposByName(
+        @Query("q") repositoryName: String,
+        @Query("per_page") perPage: Int,
+        @Query("page") page: Int
+    ): Response<SearchingRepos>
 }

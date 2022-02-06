@@ -1,9 +1,6 @@
 package my.projects.githubclient.model.respository.network
 
-import my.projects.githubclient.model.data.AuthUser
-import my.projects.githubclient.model.data.Organisation
-import my.projects.githubclient.model.data.Repository
-import my.projects.githubclient.model.data.User
+import my.projects.githubclient.model.data.*
 import my.projects.githubclient.model.respository.GithubRepository
 import retrofit2.Response
 
@@ -15,4 +12,12 @@ interface NetworkGithubApi {
     suspend fun getUserStarred(user: String): Response<List<Repository>?>
 
     suspend fun checkAuth(): Response<String>
+
+    suspend fun getGithubFile(
+        user: String,
+        repository: String,
+        path: String
+    ): Response<List<GithubFile>>
+
+    suspend fun searchReposByName(repositoryName: String, perPage: Int = 10, page: Int = 1): Response<SearchingRepos>
 }

@@ -1,10 +1,10 @@
 package my.projects.githubclient.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
@@ -83,6 +83,9 @@ class ProfileViewModel @Inject constructor (
 
                 _snackBarMessage.emit(resultMessage)
                 _isUpdating.emit(false)
+
+                delay(1000)
+                _snackBarMessage.emit(null)
             }
         }
     }

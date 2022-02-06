@@ -27,7 +27,7 @@ enum class Work(var toString: String) {
     }
 }
 
-@Deprecated("use the fromString method of Work class")
+@Deprecated("use fromString method of Work class")
 fun workfromString(name:String): Work? {
     Work.values().forEach { work ->
         if (name.lowercase() == work.toString.lowercase()) return work

@@ -1,6 +1,7 @@
 package my.projects.githubclient.view.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
@@ -20,17 +21,18 @@ import my.projects.githubclient.view.ui.theme.MyColors
 @Composable
 fun RepositoryDraw(
     modifier: Modifier = Modifier,
-    repository: Repository
+    repository: Repository,
+    onRepositoryClick: (Repository) -> Unit = {}
 ) {
     val profilePainter = rememberImagePainter(
         data = repository.owner.avatar_url,
         builder = {
             placeholder(R.drawable.ic_outline_person_24)
-            error(R.drawable.ic_outline_person_24)
+            error(R.drawable.ic_offline_mode)
         }
     )
 
-    Card(modifier = modifier) {
+    Card(modifier = modifier.clickable { onRepositoryClick(repository) }) {
         Column(modifier = Modifier.fillMaxSize()) {
             Row(modifier = Modifier.padding(start = 10.dp, top = 8.dp)) {
                 Image(

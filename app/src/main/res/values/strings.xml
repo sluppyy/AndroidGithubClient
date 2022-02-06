@@ -16,4 +16,6 @@
     <string name="get_token">Get token</string>
     <string name="save">Save</string>
     <string name="exit">Exit</string>
+    <string name="repository_screen">Repository</string>
+    <string name="empty">Empty</string>
 </resources>

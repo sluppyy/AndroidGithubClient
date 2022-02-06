@@ -36,12 +36,16 @@ import my.projects.githubclient.view.ui.components.RepositoriesDraw
 import my.projects.githubclient.view.ui.screens.*
 import my.projects.githubclient.view.ui.theme.GithubClientTheme
 import my.projects.githubclient.viewmodel.ProfileViewModel
+import my.projects.githubclient.viewmodel.RepositoryReviewViewModel
+import my.projects.githubclient.viewmodel.SearchReposViewModel
 import my.projects.githubclient.viewmodel.SettingsViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val profileViewModel: ProfileViewModel by viewModels()
     private val settingsViewModel: SettingsViewModel by viewModels()
+    private val repositoryReviewViewModel: RepositoryReviewViewModel by viewModels()
+    private val searchingReposViewModel: SearchReposViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,14 +115,15 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                         startDestination = screens[0].route,
                         modifier = Modifier.padding(innerPadding)
-                    ){
+                    ) {
                         composable(Screens.HOME.route) {
                             HomeScreen(modifier = Modifier.fillMaxSize(),
                                 onWorkClick = {navController.navigate("work/${it.toString}")},
                                 isUpdating = isUpdating,
                                 onUpdate = profileViewModel::updateProfile,
                                 onEditClick = {navController.navigate("editWorks")},
-                                works = selectedWorks.removeUnselected()
+                                works = selectedWorks.removeUnselected(),
+                                onSearchClick = {navController.navigate("searching")}
                             )
                         }
 
@@ -149,11 +154,23 @@ class MainActivity : ComponentActivity() {
                                 when (work) {
                                     Work.REPOSITORIES -> {
                                         val repos by profileViewModel.repositories.collectAsState()
-                                        RepositoriesDraw(repos = repos ?: emptyList())
+                                        RepositoriesDraw(
+                                            repos = repos ?: emptyList(),
+                                            onRepositoryClick = { rep ->
+                                                navController.navigate("rep_review")
+                                                repositoryReviewViewModel.openRepository(repository = rep)
+                                            }
+                                        )
                                     }
                                     Work.STARRED -> {
                                         val starred by profileViewModel.starred.collectAsState()
-                                        RepositoriesDraw(repos = starred ?: emptyList())
+                                        RepositoriesDraw(
+                                            repos = starred ?: emptyList(),
+                                            onRepositoryClick = { rep ->
+                                                navController.navigate("rep_review")
+                                                repositoryReviewViewModel.openRepository(repository = rep)
+                                            }
+                                        )
                                     }
                                     Work.SETTINGS -> SettingsScreen(
                                         settingsViewModel = settingsViewModel,
@@ -179,6 +196,27 @@ class MainActivity : ComponentActivity() {
                                 works = selectedWorks,
                                 onBackStack = navController::popBackStack,
                                 onEditWork = settingsViewModel::editWork
+                            )
+                        }
+
+                        composable("rep_review") {
+                            RepositoryReview(
+                                repositoryReviewViewModel = repositoryReviewViewModel,
+                                modifier = Modifier.fillMaxSize(),
+                                onBackStack = navController::popBackStack,
+                                onShareRepository = { shareText(it.html_url) }
+                            )
+                        }
+
+                        composable("searching") {
+                            SearchingScreen(
+                                searchingViewModel = searchingReposViewModel,
+                                modifier = Modifier.fillMaxSize(),
+                                onBackStack = navController::popBackStack,
+                                onReposClick = {
+                                    repositoryReviewViewModel.openRepository(it)
+                                    navController.navigate("rep_review")
+                                }
                             )
                         }
                     }

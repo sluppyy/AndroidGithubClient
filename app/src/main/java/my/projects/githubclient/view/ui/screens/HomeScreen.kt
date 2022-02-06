@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import my.projects.githubclient.R
+import my.projects.githubclient.model.data.Repository
 import my.projects.githubclient.utils.SelectableObject
 import my.projects.githubclient.view.data.Work
 import my.projects.githubclient.view.ui.components.WorksDraw
