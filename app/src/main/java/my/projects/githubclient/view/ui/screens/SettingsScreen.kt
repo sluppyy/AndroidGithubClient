@@ -20,7 +20,7 @@ fun SettingsScreen(
     onGetToken: () -> Unit = {},
     onSaveToken: (AccessToken) -> Unit = {}
 ) {
-    val is_auth by settingsViewModel.is_authorized.collectAsState()
+    val is_auth by settingsViewModel.isAuthorized.collectAsState()
 
     LazyColumn(modifier = modifier) {
         item {

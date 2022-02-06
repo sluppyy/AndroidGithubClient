@@ -29,8 +29,6 @@ class GitHubRepository @Inject constructor(
     //TODO("получать новый клиент(или фабрику) из Dagger/Hilt а не создавать его самому")
     override suspend fun updateClient() {
         val (user, token) = localRepository.getAccessToken() ?: AccessToken("", "")
-        Log.e("errr", localRepository.getAccessToken().toString())
-        Log.e("errr", is_authorized.value.toString() + " from gitrep")
 
         val okHttpClient: OkHttpClient = OkHttpClient.Builder().authenticator { _, response ->
             val credentials = Credentials.basic(user, token)
@@ -71,6 +69,7 @@ class GitHubRepository @Inject constructor(
                     401, 403  -> {
                         emit(AuthError<User?>())
                         _is_authorized.emit(false)
+                        Log.e("auth_error", networkResponse.code().toString() + " " + networkResponse.errorBody().toString())
                     }
                     else -> emit(UnknownError<User?>(networkResponse.toString()))
                 }
@@ -175,24 +174,18 @@ class GitHubRepository @Inject constructor(
     }
 
     override suspend fun checkAuth() {
-        Log.e("errr", "это метод был вызван from gitrep")
         try {
             val networkResponse = networkRepository.checkAuth()
 
-            if (networkResponse.isSuccessful) {
-                _is_authorized.emit(true)
-                Log.e("errr", is_authorized.value.toString() + " from gitrep")
-                Log.e("errr", "yes is ok from gitrep")
-            }
+            if (networkResponse.isSuccessful) _is_authorized.emit(true)
             else {
                 when(networkResponse.code()) {
                     401, 403  -> {
                         _is_authorized.emit(false)
-                        Log.e("errr", "nope not ok ${networkResponse.code()} from gitrep")
                     }
-                    else -> Log.e("errr", networkResponse.headers().toString())
+
                 }
             }
-        } catch(e: Exception) {}
+        } catch(e: Exception) {_is_authorized.emit(false)}
     }
 }

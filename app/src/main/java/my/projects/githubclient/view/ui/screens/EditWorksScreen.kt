@@ -1,6 +1,7 @@
 package my.projects.githubclient.view.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -10,14 +11,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import my.projects.githubclient.R
-import my.projects.githubclient.view.data.Work
+import my.projects.githubclient.utils.SelectableObject
+import my.projects.githubclient.utils.not
+import my.projects.githubclient.utils.toBoolean
+import my.projects.githubclient.view.data.*
+import my.projects.githubclient.view.ui.components.WorkDraw
 
 @Composable
-fun WorkScreen(
+fun EditWorksScreen(
     modifier: Modifier = Modifier,
-    work: Work,
-    onBackStack: () -> Unit = {},
-    content: @Composable (PaddingValues) -> Unit
+    works: List<SelectableObject<Work>>,
+    onEditWork: (SelectableObject<Work>) -> Unit = {},
+    onBackStack: () -> Unit = {}
 ) {
     Scaffold(
         modifier = modifier,
@@ -39,12 +44,40 @@ fun WorkScreen(
                     }
 
                     Text(
-                        text = work.toString,
+                        text = "Edit",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )
                 }
             }
-        },
-        content = content)
+        }
+    ) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+        ){
+            works.forEach { work -> item {
+                Row(
+                    modifier = modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Checkbox(
+                        checked = work.toBoolean(),
+                        onCheckedChange = {
+                            onEditWork(!work) },
+                        modifier = Modifier
+                            .size(50.dp)
+                            .padding(6.dp)
+                    )
+
+                    WorkDraw(
+                        work = work.obj,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .height(40.dp)
+                    )
+                }
+            } }
+        }
+    }
 }

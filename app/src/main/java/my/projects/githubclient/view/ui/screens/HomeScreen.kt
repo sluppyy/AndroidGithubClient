@@ -1,7 +1,5 @@
 package my.projects.githubclient.view.ui.screens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
@@ -16,25 +14,25 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import my.projects.githubclient.R
+import my.projects.githubclient.utils.SelectableObject
 import my.projects.githubclient.view.data.Work
 import my.projects.githubclient.view.ui.components.WorksDraw
-import my.projects.githubclient.viewmodel.ProfileViewModel
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     onSearchClick: () -> Unit = {},
-    onAddIssue: () -> Unit = {},
     onWorkClick: (Work) -> Unit = {},
     isUpdating: Boolean = false,
-    onUpdate: () -> Unit = {}
+    onUpdate: () -> Unit = {},
+    onEditClick: () -> Unit = {},
+    works: List<SelectableObject<Work>>
 ) {
     Scaffold(
         modifier = modifier,
         topBar = {
             HomeTopBar(
-                onSearchClick = onSearchClick,
-                onAddIssue = onAddIssue
+                onSearchClick = onSearchClick
             )
         }
     ) {
@@ -48,9 +46,10 @@ fun HomeScreen(
                 //My work (Issues, Pull Requests, Discussions, ...)
                 item {
                     WorksDraw(
-                        works = Work.values().asList(),
+                        works = works,
                         onWorkClick = onWorkClick,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        onEditClick = onEditClick
                     )
                 }
 
@@ -85,17 +84,6 @@ fun HomeTopBar(
                     .padding(horizontal = 8.dp)
             ) {
                 Icon(painterResource(id = R.drawable.ic_outline_search_24),
-                    contentDescription = "",
-                    tint = onBackgroundColor)
-            }
-
-            IconButton(
-                onClick = onAddIssue,
-                modifier = Modifier
-                    .size(40.dp)
-                    .padding(horizontal = 8.dp)
-            ) {
-                Icon(painterResource(id = R.drawable.ic_outline_add_circle_outline_24),
                     contentDescription = "",
                     tint = onBackgroundColor)
             }

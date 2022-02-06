@@ -1,6 +1,7 @@
 package my.projects.githubclient.di.modules
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
 import dagger.Module
 import dagger.Provides
@@ -15,6 +16,7 @@ import my.projects.githubclient.model.respository.local.room.GithubDatabase
 import my.projects.githubclient.model.respository.local.room.RoomRepository
 import my.projects.githubclient.model.respository.network.NetworkGithubApi
 import javax.inject.Singleton
+import  androidx.preference.PreferenceManager
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -43,15 +45,24 @@ object DBmodule {
     @Provides
     @Singleton
     fun getLocalRepository(
-        githubDatabase: GithubDatabase
+        githubDatabase: GithubDatabase,
+        sharedPrefs: SharedPreferences
     ): LocalRepository = RoomRepository(
         authUserDao = githubDatabase.authUserDao(),
         reposDao = githubDatabase.reposDao(),
-        accessTokenDao = githubDatabase.accessTokenDao())
+        accessTokenDao = githubDatabase.accessTokenDao(),
+        sharedPrefs = sharedPrefs
+    )
 
     @Singleton
     @Provides
     fun getConfigRepository(
         localRepository: LocalRepository
     ): ConfigRepository = localRepository
+
+    @Singleton
+    @Provides
+    fun getSharedPrefernces(
+        @ApplicationContext appContext: Context
+    ): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(appContext)
 }

@@ -14,4 +14,5 @@ object MyColors {
     val Black = Color(0xFF323332)
     val Orange = Color(0xFFFF7043)
     val Yellow = Color(0xFFFFCA28)
+    val Red = Color(0xFFE91E63)
 }

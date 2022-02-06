@@ -3,7 +3,6 @@ package my.projects.githubclient.view.ui
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -29,14 +27,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import my.projects.githubclient.R
 import my.projects.githubclient.config.GITHUB_GET_TOKEN_URL
+import my.projects.githubclient.utils.Selected
+import my.projects.githubclient.utils.removeUnselected
 import my.projects.githubclient.view.data.Screens
 import my.projects.githubclient.view.data.Work
 import my.projects.githubclient.view.data.workfromString
 import my.projects.githubclient.view.ui.components.RepositoriesDraw
-import my.projects.githubclient.view.ui.screens.HomeScreen
-import my.projects.githubclient.view.ui.screens.ProfileScreen
-import my.projects.githubclient.view.ui.screens.SettingsScreen
-import my.projects.githubclient.view.ui.screens.WorkScreen
+import my.projects.githubclient.view.ui.screens.*
 import my.projects.githubclient.view.ui.theme.GithubClientTheme
 import my.projects.githubclient.viewmodel.ProfileViewModel
 import my.projects.githubclient.viewmodel.SettingsViewModel
@@ -51,6 +48,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             val scaffoldState = rememberScaffoldState()
+
+            val selectedWorks by settingsViewModel.selectedWorks.collectAsState()
 
             val screens = Screens.values()
             val isUpdating by profileViewModel.isUpdating.collectAsState()
@@ -113,12 +112,14 @@ class MainActivity : ComponentActivity() {
                         startDestination = screens[0].route,
                         modifier = Modifier.padding(innerPadding)
                     ){
-                        composable(Screens.HOME.route) { HomeScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            onWorkClick = {navController.navigate("work/${it.toString}")},
-                            isUpdating = isUpdating,
-                            onUpdate = profileViewModel::updateProfile
-                        )
+                        composable(Screens.HOME.route) {
+                            HomeScreen(modifier = Modifier.fillMaxSize(),
+                                onWorkClick = {navController.navigate("work/${it.toString}")},
+                                isUpdating = isUpdating,
+                                onUpdate = profileViewModel::updateProfile,
+                                onEditClick = {navController.navigate("editWorks")},
+                                works = selectedWorks.removeUnselected()
+                            )
                         }
 
                         composable(Screens.PROFILE.route) { ProfileScreen(
@@ -165,11 +166,20 @@ class MainActivity : ComponentActivity() {
                                         onGetToken = ::openLink,
                                         onSaveToken = {
                                             settingsViewModel.setAccessToken(it)
+                                            profileViewModel.clearData()
                                             navController.popBackStack()
                                         }
                                     )
                                 }
                             }
+                        }
+
+                        composable("editWorks") {
+                            EditWorksScreen(
+                                works = selectedWorks,
+                                onBackStack = navController::popBackStack,
+                                onEditWork = settingsViewModel::editWork
+                            )
                         }
                     }
                 }
